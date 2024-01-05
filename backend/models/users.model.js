@@ -19,14 +19,19 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    next();
-  }
-
+userSchema.statics.encodePassword = async function (password) {
   const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-});
+  const encodedPassword = await bcrypt.hash(password, salt);
+
+  return encodedPassword;
+};
+
+userSchema.statics.verifyPasswords = async function (
+  enteredPassword,
+  userPassword
+) {
+  return await bcrypt.compare(enteredPassword, userPassword);
+};
 
 const User = mongoose.model("User", userSchema);
 
