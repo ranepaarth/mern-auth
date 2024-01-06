@@ -20,10 +20,13 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.statics.encodePassword = async function (password) {
-  const salt = await bcrypt.genSalt(10);
-  const encodedPassword = await bcrypt.hash(password, salt);
+  if (password) {
+    const salt = await bcrypt.genSalt(10);
+    const encodedPassword = await bcrypt.hash(password, salt);
 
-  return encodedPassword;
+    return encodedPassword;
+  }
+  return;
 };
 
 userSchema.statics.verifyPasswords = async function (
