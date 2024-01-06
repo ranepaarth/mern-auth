@@ -9,7 +9,7 @@ const authUserController = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
-  console.log("user", user);
+  // console.log("user", user);
   if (user && (await User.verifyPasswords(password, user?.password))) {
     generateToken(res, user._id);
     res.status(201).json({
@@ -19,7 +19,7 @@ const authUserController = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(401);
-    throw new Error("Sorry!! User not found.Invalid credentials.");
+    throw new Error("Sorry!! User not found.Invalid email or password.");
   }
 });
 
@@ -112,7 +112,6 @@ const updateUserProfileController = asyncHandler(async (req, res) => {
     res.status(404);
     throw new Error("Sorry!! User not found...");
   }
-  res.status(200).json({ msg: "update user profile" });
 });
 
 export {
