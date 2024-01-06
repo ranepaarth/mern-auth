@@ -11,8 +11,10 @@ const protectApiRoutes = asyncHandler(async (req, res, next) => {
     try {
       const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
-      // userId already set while generating token. 
-      
+      console.log("decodedToken", decodedToken);
+
+      // userId already set while generating token.
+
       //we are attaching the user to the req object so that it can be accessed after authorization(user logs in).
       req.user = await User.findById(decodedToken.userId).select("-password");
 
@@ -27,5 +29,4 @@ const protectApiRoutes = asyncHandler(async (req, res, next) => {
   }
 });
 
-
-export {protectApiRoutes}
+export { protectApiRoutes };
