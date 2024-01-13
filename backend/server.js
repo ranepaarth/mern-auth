@@ -4,6 +4,7 @@ import express from "express";
 import connectDB from "./config/db.js";
 import { errorHandler, notFoundError } from "./middlewares/errorMiddleware.js";
 import userRoutes from "./routes/userRoutes.js";
+import cors from "cors"
 dotenv.config();
 
 const port = process.env.PORT || 5000;
@@ -11,6 +12,7 @@ const port = process.env.PORT || 5000;
 connectDB();
 
 const app = express();
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
