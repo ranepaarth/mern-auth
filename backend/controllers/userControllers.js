@@ -19,7 +19,7 @@ const authUserController = asyncHandler(async (req, res) => {
     });
   } else {
     res.status(401);
-    throw new Error("Sorry!! User not found.Invalid email or password.");
+    throw new Error("Oops!! User not found. Invalid email or password.");
   }
 });
 
@@ -34,7 +34,7 @@ const registerUserController = asyncHandler(async (req, res) => {
   if (userExists) {
     res.status(400);
     throw new Error(
-      "User with the same email id already exists. Please try logging in."
+      "That email is already taken. Try another"
     );
   }
 
