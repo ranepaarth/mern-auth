@@ -1,10 +1,13 @@
 import React from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import AppLayout from "./layouts/AppLayout";
-import HomePage from "./pages/HomePage";
-import LoginPage from "./pages/LoginPage";
-import RegisterPage from "./pages/RegisterPage";
-import ProfilePage from "./pages/ProfilePage";
+import {
+  AppLayout,
+  HomePage,
+  LoginPage,
+  ProfilePage,
+  ProtectedRoute,
+  RegisterPage,
+} from "./clientRoutes";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -23,11 +26,12 @@ const App = () => {
         {
           path: "register",
           element: <RegisterPage />,
-        },       
+        },
         {
-          path: "profile",
-          element: <ProfilePage />,
-        },       
+          path: "",
+          element: <ProtectedRoute />,
+          children: [{ path: "profile", element: <ProfilePage /> }],
+        },
       ],
     },
   ]);
