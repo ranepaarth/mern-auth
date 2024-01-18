@@ -33,9 +33,7 @@ const registerUserController = asyncHandler(async (req, res) => {
   const userExists = await User.findOne({ email });
   if (userExists) {
     res.status(400);
-    throw new Error(
-      "That email is already taken. Try another"
-    );
+    throw new Error("That email is already taken. Try another");
   }
 
   const user = await User.create({
@@ -84,34 +82,49 @@ const getUserProfileController = asyncHandler(async (req, res) => {
 // route PUT /api/users/profile
 // @access Private
 const updateUserProfileController = asyncHandler(async (req, res) => {
-  const user = User.findById(req.user._id);
-  if (user) {
-    const encodeUpdatedPassword = await User.encodePassword(req.body.password);
+  const user = await User.findById(req.user._id);
 
-    let updatedUser = {
-      name: req.body.name || user.name,
-      email: req.body.email || user.email,
-      password: encodeUpdatedPassword || user.password,
-    };
-
-    // the "new" flag will return the latest document rather than returning the older (i.e. document with old credentials) document
-    updatedUser = await User.findOneAndUpdate(
-      { _id: req.user._id },
-      updatedUser,
-      {
-        new: true,
-      }
-    );
-
-    res.status(200).json({
-      _id: updatedUser._id,
-      name: updatedUser.name,
-      email: updatedUser.email,
-    });
-  } else {
+  if (!user) {
     res.status(404);
     throw new Error("Sorry!! User not found...");
   }
+
+  const updatePassword = req.body.password
+    ? await User.encodePassword(req.body.password)
+    : null;
+
+  const isEmailUnchanged =
+    req.body.email === "" || user.email === req.body.email;
+
+  if (!isEmailUnchanged) {
+    const userExist = await User.findOne({ email: req.body.email });
+
+    if (userExist) {
+      res.status(404);
+      throw new Error("Oops!! Email already taken. Try another");
+    }
+  }
+
+  const updatedUser = {
+    name: req.body.name || user.name,
+    email: isEmailUnchanged ? user.email : req.body.email,
+    password: updatePassword || user.password,
+  };
+
+  // the "new" flag will return the latest document rather than returning the older document with old credentials
+  const updatedUserDocument = await User.findOneAndUpdate(
+    { _id: req.user._id },
+    updatedUser,
+    { new: true }
+  );
+
+  const responsePayload = {
+    _id: user._id,
+    name: updatedUserDocument.name,
+    email: updatedUserDocument.email,
+  };
+
+  res.status(200).json(responsePayload);
 });
 
 export {
